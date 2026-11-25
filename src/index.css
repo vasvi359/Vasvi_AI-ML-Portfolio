@@ -1,0 +1,346 @@
+@import "tailwindcss";
+
+/* Class-based dark theme, toggled on <html>. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --color-cream: #fff4f7;
+  --color-blush: #f8dce5;
+  --color-petal: #efa9c0;
+  --color-rose: #d96f96;
+  --color-rose-deep: #b34e73;
+  --color-ink: #343039;
+  --color-muted: #76656c;
+
+  /* Theme-aware surfaces and accents (flipped under .dark). */
+  --color-paper: #ffffff;
+  --color-surface: #ffffff;
+  --color-accent: #b34e73;
+  --color-focus: #b34e73;
+  --color-cta-hover: #343039;
+
+  --font-serif: "Playfair Display", "Cormorant Garamond", Georgia, serif;
+  --font-sans: "Inter", "DM Sans", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --animate-float: float 9s ease-in-out infinite;
+  --animate-float-slow: float 14s ease-in-out infinite;
+  --animate-marquee: marquee 38s linear infinite;
+  --animate-marquee-reverse: marquee-reverse 46s linear infinite;
+  --animate-spin-slow: orbit 32s linear infinite;
+  --animate-drift: drift 14s linear infinite;
+  --animate-glow: glow 4.5s ease-in-out infinite;
+}
+
+/*
+ * Midnight Rose. These overrides feed the same utilities the light theme uses,
+ * so every existing component follows the active theme automatically.
+ */
+.dark {
+  color-scheme: dark;
+  --color-cream: #211b23;
+  --color-blush: #40333e;
+  --color-petal: #e6a6bd;
+  --color-rose: #d97b9d;
+  --color-rose-deep: #a8506f;
+  --color-ink: #f5eef2;
+  --color-muted: #bdb0bb;
+  --color-paper: #17141a;
+  --color-surface: #26212a;
+  --color-accent: #efa9c0;
+  --color-focus: #efa9c0;
+  --color-cta-hover: #8c3d59;
+}
+
+/* Brief, class-scoped colour transition when the theme is switched. */
+html.theme-transition,
+html.theme-transition *,
+html.theme-transition *::before,
+html.theme-transition *::after {
+  transition:
+    background-color 240ms ease,
+    border-color 240ms ease,
+    color 240ms ease,
+    fill 240ms ease,
+    stroke 240ms ease,
+    box-shadow 240ms ease !important;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(0, -16px, 0);
+  }
+}
+
+@keyframes orbit {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-reverse {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+/* one-shot pink particle drift — transform + opacity only */
+@keyframes drift {
+  0% {
+    transform: translate3d(0, 8px, 0) scale(0.8);
+    opacity: 0;
+  }
+  18% {
+    opacity: var(--particle-opacity, 0.75);
+  }
+  80% {
+    opacity: calc(var(--particle-opacity, 0.75) * 0.5);
+  }
+  100% {
+    transform: translate3d(var(--dx, 12px), -120px, 0) scale(0.5);
+    opacity: 0;
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.75;
+    transform: scale(1.12);
+  }
+}
+
+@keyframes soundbar {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes sheen {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  ::selection {
+    background-color: var(--color-blush);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-focus);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  /* Added by CatCursor once the cat image has loaded. */
+  html.cat-cursor,
+  html.cat-cursor * {
+    cursor: none !important;
+  }
+
+  html.cat-cursor input,
+  html.cat-cursor textarea,
+  html.cat-cursor select {
+    cursor: auto !important;
+  }
+
+  section[id] {
+    scroll-margin-top: 92px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    letter-spacing: -0.015em;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--color-paper);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-blush);
+    border-radius: 999px;
+    border: 2px solid var(--color-paper);
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-petal);
+  }
+}
+
+@utility arch {
+  border-radius: 999px 999px 1.75rem 1.75rem;
+}
+
+@utility label-mono {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+@utility grain {
+  background-image: radial-gradient(rgba(217, 111, 150, 0.12) 1px, transparent 1px);
+  background-size: 18px 18px;
+}
+
+/*
+ * Animated 1px gradient border for project cards.
+ * A masked gradient ring is cheaper than re-laying out a real border.
+ */
+.shimmer-border {
+  position: relative;
+  isolation: isolate;
+}
+
+.shimmer-border::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    115deg,
+    rgba(239, 169, 192, 0) 18%,
+    #efa9c0 42%,
+    #d96f96 52%,
+    rgba(239, 169, 192, 0) 78%
+  );
+  background-size: 220% 220%;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.45s ease;
+  pointer-events: none;
+}
+
+.shimmer-border:hover::after,
+.group:hover .shimmer-border::after {
+  opacity: 1;
+  animation: sheen 2.6s linear infinite;
+}
+
+/*
+ * Cross-page transition: the root cross-fades while a project's visual plate
+ * morphs from the homepage card into the case-study hero.
+ */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.45s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+::view-transition-group(project-visual-edumind),
+::view-transition-group(project-visual-sarcasm) {
+  animation-duration: 0.7s;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/*
+ * Theme ripple: the incoming theme snapshot is clipped to a circle that grows
+ * from the toggle button (coordinates set by ThemeProvider). The outgoing
+ * snapshot stays underneath, so the new theme is genuinely revealed in place
+ * rather than the whole page cross-fading.
+ */
+html.theme-rippling::view-transition-old(root),
+html.theme-rippling::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+
+html.theme-rippling::view-transition-old(root) {
+  z-index: 1;
+}
+
+html.theme-rippling::view-transition-new(root) {
+  z-index: 2;
+  clip-path: circle(0px at var(--ripple-x, 50vw) var(--ripple-y, 50vh));
+}
+
+/* tiny equaliser in the ambient player — paused entirely for reduced motion */
+.soundbar {
+  transform-origin: bottom;
+  animation: soundbar 1.15s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .soundbar {
+    animation: none;
+    transform: scaleY(0.6);
+  }
+}
+
+/* soft pink liquid glow used behind milestone dots */
+.milestone-glow {
+  background: radial-gradient(circle, rgba(217, 111, 150, 0.55) 0%, rgba(217, 111, 150, 0) 70%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
