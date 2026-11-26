@@ -9,6 +9,7 @@ import type { PointerEvent as ReactPointerEvent } from "react";
 import { ArrowDown, Download } from "lucide-react";
 import { HERO_STATS, MARQUEE_WORDS } from "../data";
 import { EASE, SocialLinks, Sparkle } from "./ui";
+import { assetPath } from "../paths";
 import {
   HandUnderline,
   Magnetic,
@@ -151,7 +152,7 @@ export default function Hero() {
             </Magnetic>
             <Magnetic strength={7}>
               <a
-                href="/Vasvi_Bali_Resume.pdf"
+                href={assetPath("/Vasvi_Bali_Resume.pdf")}
                 download="Vasvi_Bali_Resume.pdf"
                 className="group inline-flex items-center gap-2.5 rounded-full border border-blush bg-surface/70 px-6 py-3.5 text-sm font-medium text-ink backdrop-blur transition-all duration-300 hover:-translate-y-0.5 hover:border-petal hover:bg-cream"
               >
@@ -227,7 +228,7 @@ export default function Hero() {
           <div className="relative arch border border-blush bg-surface p-2.5 shadow-[0_50px_90px_-50px_rgba(179,78,115,0.55)] sm:p-3">
             <div className="arch relative overflow-hidden">
               <img
-                src="/images/portrait.jpg"
+                src={assetPath("/images/portrait.jpg")}
                 alt="Portrait of Vasvi Bali"
                 width={720}
                 height={960}

@@ -1,9 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { animate, motion, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
 import { useMouseInput } from "./motion-kit";
+import { assetPath } from "../paths";
 
 /** The cat picture lives here: `public/images/cursor-cat.jpg`. */
-const CAT_SRC = "/images/cursor-cat.jpg";
+const CAT_SRC = assetPath("/images/cursor-cat.jpg");
 
 type Particle = {
   x: number;
@@ -246,7 +247,9 @@ export default function CatCursor() {
     return () => controls.stop();
   }, [interactive, pressed, scale, enabled, reduceMotion]);
 
-  if (!enabled) return null;
+  // If the picture never loads (blocked asset, offline, wrong deploy path), keep
+  // the native pointer instead of showing an empty pink disc in its place.
+  if (!enabled || failed) return null;
 
   return (
     <>

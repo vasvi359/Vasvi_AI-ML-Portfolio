@@ -1,3 +1,5 @@
+import { assetPath } from "./paths";
+
 export const NAV_LINKS = [
   { id: "home", label: "Home" },
   { id: "about", label: "About" },
@@ -253,7 +255,7 @@ export const PROJECTS = [
       "Co-authored research paper · Government grant secured for copyright registration of the platform.",
     github: null,
     accent: "from-cream via-blush to-petal",
-    image: "/images/edumind-dashboard.webp",
+    image: assetPath("/images/edumind-dashboard.webp"),
     imageAlt:
       "EduMind dashboard showing 12 courses, 8 completed tasks, 92% average performance and a six-month performance chart.",
   },
@@ -275,7 +277,7 @@ export const PROJECTS = [
     highlight: null,
     github: null,
     accent: "from-blush via-petal to-rose",
-    image: "/images/sarcasm-detector-dashboard.webp",
+    image: assetPath("/images/sarcasm-detector-dashboard.webp"),
     imageAlt:
       "Sarcasm Detector dashboard with a text input, a 92% highly sarcastic result and a weekly insight chart.",
   },

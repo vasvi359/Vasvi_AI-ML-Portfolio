@@ -24,6 +24,9 @@ import {
   ProjectShell,
 } from "../components/project/ProjectChrome";
 import EduMindArchitecture from "../components/project/EduMindArchitecture";
+import { assetPath } from "../paths";
+
+const CERTIFICATE_SRC = assetPath("/images/edumind-copyright-certificate.png");
 
 const FEATURES = [
   {
@@ -535,14 +538,14 @@ export default function EduMindPage() {
         <Reveal>
           <figure className="overflow-hidden rounded-[1.8rem] border border-blush bg-surface">
             <a
-              href="/images/edumind-copyright-certificate.png"
+              href={CERTIFICATE_SRC}
               target="_blank"
               rel="noopener noreferrer"
               className="group block bg-cream/60 p-4 sm:p-6"
               aria-label="Open the copyright registration certificate in a new tab"
             >
               <img
-                src="/images/edumind-copyright-certificate.png"
+                src={CERTIFICATE_SRC}
                 alt="Certificate of Registration SW-2026023795 from the Copyright Office, Government of India, for EduMind, listing Vasvi Bali, Dr. Himanshu Sharma, Dr. Vijaya Chaudhary and Dr. Alok Aggarwal as authors and IIM University, Greater Noida as owner."
                 width={645}
                 height={852}
@@ -563,7 +566,7 @@ export default function EduMindPage() {
                 </span>
               </span>
               <a
-                href="/images/edumind-copyright-certificate.png"
+                href={CERTIFICATE_SRC}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-1.5 rounded-full border border-blush px-3 py-1.5 font-mono text-[9px] uppercase tracking-[0.12em] text-accent transition-colors duration-300 hover:border-petal hover:bg-cream"

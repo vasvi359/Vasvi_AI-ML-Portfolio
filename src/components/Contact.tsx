@@ -1,6 +1,6 @@
 import { ArrowUp, ArrowUpRight, Github, Linkedin, Mail, Phone } from "lucide-react";
 import { SOCIALS } from "../data";
-import { Reveal, SocialLinks, Sparkle, openExternalLink } from "./ui";
+import { Reveal, SocialLinks, Sparkle } from "./ui";
 import { HandUnderline, WordReveal } from "./motion-kit";
 
 const channels = [
@@ -127,7 +127,6 @@ export default function Contact() {
                     href={href}
                     target={external ? "_blank" : undefined}
                     rel={external ? "noreferrer noopener" : undefined}
-                    onClick={external ? (event) => openExternalLink(event, href) : undefined}
                     className="group flex items-center gap-4 rounded-2xl border border-white/15 bg-surface/[0.07] px-4 py-3.5 backdrop-blur-sm transition-all duration-300 hover:translate-x-1 hover:border-white/35 hover:bg-surface/[0.13] sm:px-5"
                   >
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-surface/10 text-white transition-colors duration-300 group-hover:bg-surface group-hover:text-accent">

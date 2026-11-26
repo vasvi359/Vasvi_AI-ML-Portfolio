@@ -6,6 +6,7 @@ import EduMindPage from "./pages/EduMindPage";
 import SarcasmDetectionPage from "./pages/SarcasmDetectionPage";
 import NotFoundPage from "./pages/NotFoundPage";
 import MusicPlayer from "./components/MusicPlayer";
+import CatCursor from "./components/CatCursor";
 
 function Routes() {
   const { path } = useRouter();
@@ -28,7 +29,8 @@ export default function App() {
     <ThemeProvider>
       <RouterProvider>
         <Routes />
-        {/* Mounted outside the routes so audio keeps playing across pages. */}
+        {/* Both live outside the routes so the cursor and audio survive navigation. */}
+        <CatCursor />
         <MusicPlayer />
       </RouterProvider>
     </ThemeProvider>

@@ -3,7 +3,7 @@ import { motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft, ArrowRight, ArrowUpRight } from "lucide-react";
 import Nav from "../Nav";
 import { Link } from "../../router";
-import { EASE } from "../ui";
+import { EASE, SocialLinks } from "../ui";
 import { WordReveal } from "../motion-kit";
 import { TechBadges } from "./blocks";
 
@@ -450,6 +450,7 @@ export function ProjectShell({ children }: { children: ReactNode }) {
           <p className="font-mono text-[9px] uppercase tracking-[0.16em] text-muted">
             © Vasvi Bali · Project case study
           </p>
+          <SocialLinks />
           <Link
             to="/"
             className="group inline-flex items-center gap-2 font-mono text-[9px] uppercase tracking-[0.16em] text-accent"

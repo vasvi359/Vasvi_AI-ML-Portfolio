@@ -1,5 +1,5 @@
 import { motion, useReducedMotion } from "framer-motion";
-import type { MouseEvent as ReactMouseEvent, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { Github, Linkedin, Mail } from "lucide-react";
 import { SOCIALS } from "../data";
 
@@ -99,29 +99,6 @@ export function SectionHeading({
   );
 }
 
-/**
- * Opens an external link in a new tab. Some browsers and embedded previews
- * block that popup, which made the click look dead — in that case the visitor is
- * taken to the destination in the current tab instead.
- */
-export function openExternalLink(
-  event: ReactMouseEvent<HTMLAnchorElement>,
-  href: string,
-) {
-  if (event.defaultPrevented || event.button !== 0) return;
-  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-
-  event.preventDefault();
-
-  const opened = window.open(href, "_blank");
-  if (opened) {
-    opened.opener = null;
-    return;
-  }
-
-  window.location.href = href;
-}
-
 type SocialLinksProps = {
   tone?: "light" | "dark";
   className?: string;
@@ -153,7 +130,6 @@ export function SocialLinks({ tone = "light", className = "" }: SocialLinksProps
             target={external ? "_blank" : undefined}
             rel={external ? "noreferrer noopener" : undefined}
             aria-label={label}
-            onClick={external ? (event) => openExternalLink(event, href) : undefined}
             className={`${base} ${styles}`}
           >
             <Icon
