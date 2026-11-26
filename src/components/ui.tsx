@@ -1,6 +1,6 @@
 import { motion, useReducedMotion } from "framer-motion";
+import type { MouseEvent as ReactMouseEvent, ReactNode } from "react";
 import { Github, Linkedin, Mail } from "lucide-react";
-import type { ReactNode } from "react";
 import { SOCIALS } from "../data";
 
 export const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
@@ -99,6 +99,29 @@ export function SectionHeading({
   );
 }
 
+/**
+ * Opens an external link in a new tab. Some browsers and embedded previews
+ * block that popup, which made the click look dead — in that case the visitor is
+ * taken to the destination in the current tab instead.
+ */
+export function openExternalLink(
+  event: ReactMouseEvent<HTMLAnchorElement>,
+  href: string,
+) {
+  if (event.defaultPrevented || event.button !== 0) return;
+  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+
+  event.preventDefault();
+
+  const opened = window.open(href, "_blank");
+  if (opened) {
+    opened.opener = null;
+    return;
+  }
+
+  window.location.href = href;
+}
+
 type SocialLinksProps = {
   tone?: "light" | "dark";
   className?: string;
@@ -120,22 +143,27 @@ export function SocialLinks({ tone = "light", className = "" }: SocialLinksProps
 
   return (
     <div className={`flex items-center gap-2.5 ${className}`}>
-      {links.map(({ label, href, Icon }) => (
-        <a
-          key={label}
-          href={href}
-          target={href.startsWith("http") ? "_blank" : undefined}
-          rel={href.startsWith("http") ? "noreferrer noopener" : undefined}
-          aria-label={label}
-          className={`${base} ${styles}`}
-        >
-          <Icon
-            className="h-[18px] w-[18px] transition-transform duration-300 group-hover:scale-110"
-            strokeWidth={1.6}
-            aria-hidden
-          />
-        </a>
-      ))}
+      {links.map(({ label, href, Icon }) => {
+        const external = href.startsWith("http");
+
+        return (
+          <a
+            key={label}
+            href={href}
+            target={external ? "_blank" : undefined}
+            rel={external ? "noreferrer noopener" : undefined}
+            aria-label={label}
+            onClick={external ? (event) => openExternalLink(event, href) : undefined}
+            className={`${base} ${styles}`}
+          >
+            <Icon
+              className="h-[18px] w-[18px] transition-transform duration-300 group-hover:scale-110"
+              strokeWidth={1.6}
+              aria-hidden
+            />
+          </a>
+        );
+      })}
     </div>
   );
 }
