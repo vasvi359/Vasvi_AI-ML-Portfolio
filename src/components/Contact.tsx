@@ -13,14 +13,14 @@ const channels = [
   },
   {
     label: "LinkedIn",
-    value: "linkedin.com/in/vasvi-bali",
+    value: "linkedin.com/in/vasvi-bali-69a3b730a",
     href: SOCIALS.linkedin,
     Icon: Linkedin,
     external: true,
   },
   {
     label: "GitHub",
-    value: "github.com/vasvibali",
+    value: "github.com/vasvi359",
     href: SOCIALS.github,
     Icon: Github,
     external: true,

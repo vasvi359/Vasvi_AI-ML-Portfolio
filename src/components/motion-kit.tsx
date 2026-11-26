@@ -26,6 +26,45 @@ export function useFinePointer() {
   return fine;
 }
 
+/**
+ * True when the visitor has mouse-style input. `useFinePointer` alone is not
+ * enough in the wild: hybrid laptops and convertible tablets can report a
+ * coarse primary pointer (or `hover: none`) even though a real mouse/trackpad is
+ * in use, which silently disabled the custom cursor. A genuine mouse pointer
+ * event is the most reliable signal, while touch input never enables it.
+ */
+export function useMouseInput() {
+  const [mouse, setMouse] = useState(false);
+
+  useEffect(() => {
+    if (mouse) return;
+
+    const fine = window.matchMedia("(hover: hover) and (pointer: fine)");
+    const anyFine = window.matchMedia("(any-hover: hover) and (any-pointer: fine)");
+    const update = () => setMouse(fine.matches || anyFine.matches);
+
+    update();
+    fine.addEventListener("change", update);
+    anyFine.addEventListener("change", update);
+
+    const handlePointer = (event: PointerEvent) => {
+      if (event.pointerType === "mouse") setMouse(true);
+    };
+
+    window.addEventListener("pointermove", handlePointer, { passive: true });
+    window.addEventListener("pointerdown", handlePointer, { passive: true });
+
+    return () => {
+      fine.removeEventListener("change", update);
+      anyFine.removeEventListener("change", update);
+      window.removeEventListener("pointermove", handlePointer);
+      window.removeEventListener("pointerdown", handlePointer);
+    };
+  }, [mouse]);
+
+  return mouse;
+}
+
 type MagneticProps = {
   children: ReactNode;
   className?: string;

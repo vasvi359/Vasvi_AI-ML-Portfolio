@@ -9,8 +9,8 @@ export const NAV_LINKS = [
 ] as const;
 
 export const SOCIALS = {
-  github: "https://github.com/vasvibali",
-  linkedin: "https://linkedin.com/in/vasvi-bali",
+  github: "https://github.com/vasvi359",
+  linkedin: "https://www.linkedin.com/in/vasvi-bali-69a3b730a",
   email: "vasvibali@gmail.com",
   phone: "+91-91039 07192",
   phoneHref: "+919103907192",

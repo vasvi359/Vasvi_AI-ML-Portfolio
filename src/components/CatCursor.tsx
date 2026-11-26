@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { animate, motion, useMotionValue, useReducedMotion, useSpring } from "framer-motion";
-import { useFinePointer } from "./motion-kit";
+import { useMouseInput } from "./motion-kit";
 
 /** The cat picture lives here: `public/images/cursor-cat.jpg`. */
 const CAT_SRC = "/images/cursor-cat.jpg";
@@ -32,12 +32,21 @@ const SPAWN_DISTANCE = 13;
  * this runs, and comes back only if the cat image fails to load.
  */
 export default function CatCursor() {
-  const finePointer = useFinePointer();
-  const reduceMotion = useReducedMotion();
-  const enabled = finePointer && !reduceMotion;
+  // A real mouse event enables the cat even when the OS reports a coarse/hybrid
+  // primary pointer; touch-only visitors never match, so their experience is
+  // untouched.
+  const mouseInput = useMouseInput();
+  const reduceMotion = Boolean(useReducedMotion());
+  const enabled = mouseInput;
+  // Reduced motion keeps the cat (it is the pointer) but drops the decorative
+  // trail and the springy movement.
+  const trailEnabled = enabled && !reduceMotion;
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const imgRef = useRef<HTMLImageElement>(null);
+  const spawnRef = useRef<((x: number, y: number, amount: number) => void) | null>(null);
   const [failed, setFailed] = useState(false);
+  const [imageReady, setImageReady] = useState(false);
   const [visible, setVisible] = useState(false);
   const [interactive, setInteractive] = useState(false);
   const [pressed, setPressed] = useState(false);
@@ -48,19 +57,99 @@ export default function CatCursor() {
   const y = useSpring(pointerY, { stiffness: 900, damping: 42, mass: 0.35 });
   const scale = useMotionValue(1);
 
-  // Hide the normal white cursor as soon as the custom one is active.
+  // Hide the normal cursor only once the cat is actually on screen, so a slow
+  // or blocked image never leaves the visitor without any pointer at all.
   useEffect(() => {
-    if (!enabled || failed) return;
+    if (!enabled || failed || !imageReady) return;
 
     const root = document.documentElement;
     root.classList.add("cat-cursor");
 
     return () => root.classList.remove("cat-cursor");
-  }, [enabled, failed]);
+  }, [enabled, failed, imageReady]);
+
+  // Cached images may already be complete before `onLoad` can be attached.
+  useEffect(() => {
+    const node = imgRef.current;
+    if (node?.complete && node.naturalWidth > 0) setImageReady(true);
+  }, [enabled]);
+
+  // Pointer tracking. Kept separate from the particle loop so the cat still
+  // follows the pointer when the trail is off (reduced motion).
+  useEffect(() => {
+    if (!enabled) return;
+
+    let visibleNow = false;
+    let interactiveNow = false;
+    let pressedNow = false;
+    let lastX = -100;
+    let lastY = -100;
+
+    const handleMove = (event: PointerEvent) => {
+      pointerX.set(event.clientX);
+      pointerY.set(event.clientY);
+
+      if (!visibleNow) {
+        visibleNow = true;
+        setVisible(true);
+      }
+
+      const target = event.target as Element | null;
+      const nextInteractive = Boolean(
+        target?.closest("a, button, [role='button'], [data-cursor='interactive']"),
+      );
+      if (nextInteractive !== interactiveNow) {
+        interactiveNow = nextInteractive;
+        setInteractive(nextInteractive);
+      }
+
+      const distance = Math.hypot(event.clientX - lastX, event.clientY - lastY);
+      if (distance < SPAWN_DISTANCE) return;
+
+      lastX = event.clientX;
+      lastY = event.clientY;
+      spawnRef.current?.(event.clientX, event.clientY, 1 + Math.floor(Math.random() * 2));
+    };
+
+    const handleDown = (event: PointerEvent) => {
+      if (!pressedNow) {
+        pressedNow = true;
+        setPressed(true);
+      }
+      spawnRef.current?.(event.clientX, event.clientY, 10);
+    };
+
+    const handleUp = () => {
+      if (!pressedNow) return;
+      pressedNow = false;
+      setPressed(false);
+    };
+
+    const hide = () => {
+      visibleNow = false;
+      pressedNow = false;
+      setVisible(false);
+      setPressed(false);
+    };
+
+    window.addEventListener("pointermove", handleMove, { passive: true });
+    window.addEventListener("pointerdown", handleDown, { passive: true });
+    window.addEventListener("pointerup", handleUp, { passive: true });
+    window.addEventListener("blur", hide);
+    document.addEventListener("pointerleave", hide);
+
+    return () => {
+      window.removeEventListener("pointermove", handleMove);
+      window.removeEventListener("pointerdown", handleDown);
+      window.removeEventListener("pointerup", handleUp);
+      window.removeEventListener("blur", hide);
+      document.removeEventListener("pointerleave", hide);
+    };
+  }, [enabled, pointerX, pointerY]);
 
   // Sparkle trail.
   useEffect(() => {
-    if (!enabled) return;
+    if (!trailEnabled) return;
 
     const canvas = canvasRef.current;
     const context = canvas?.getContext("2d");
@@ -69,8 +158,6 @@ export default function CatCursor() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const particles: Particle[] = [];
     let frame = 0;
-    let lastX = -100;
-    let lastY = -100;
 
     const resize = () => {
       canvas.width = Math.floor(window.innerWidth * dpr);
@@ -99,6 +186,8 @@ export default function CatCursor() {
           tone,
         });
       }
+
+      if (!frame) frame = window.requestAnimationFrame(tick);
     };
 
     const tick = () => {
@@ -131,60 +220,21 @@ export default function CatCursor() {
       }
     };
 
-    const handleMove = (event: PointerEvent) => {
-      pointerX.set(event.clientX);
-      pointerY.set(event.clientY);
-      setVisible(true);
-
-      const target = event.target as Element | null;
-      setInteractive(
-        Boolean(target?.closest("a, button, [role='button'], [data-cursor='interactive']")),
-      );
-
-      const distance = Math.hypot(event.clientX - lastX, event.clientY - lastY);
-      if (distance < SPAWN_DISTANCE) return;
-
-      lastX = event.clientX;
-      lastY = event.clientY;
-      spawn(event.clientX, event.clientY, 1 + Math.floor(Math.random() * 2));
-
-      if (!frame) frame = window.requestAnimationFrame(tick);
-    };
-
-    const handleDown = (event: PointerEvent) => {
-      setPressed(true);
-      spawn(event.clientX, event.clientY, 10);
-      if (!frame) frame = window.requestAnimationFrame(tick);
-    };
-
-    const handleUp = () => setPressed(false);
-
-    const hide = () => {
-      setVisible(false);
-      setPressed(false);
-    };
-
+    spawnRef.current = spawn;
     resize();
     window.addEventListener("resize", resize);
-    window.addEventListener("pointermove", handleMove, { passive: true });
-    window.addEventListener("pointerdown", handleDown, { passive: true });
-    window.addEventListener("pointerup", handleUp, { passive: true });
-    window.addEventListener("blur", hide);
-    document.addEventListener("pointerleave", hide);
 
     return () => {
+      spawnRef.current = null;
       window.removeEventListener("resize", resize);
-      window.removeEventListener("pointermove", handleMove);
-      window.removeEventListener("pointerdown", handleDown);
-      window.removeEventListener("pointerup", handleUp);
-      window.removeEventListener("blur", hide);
-      document.removeEventListener("pointerleave", hide);
       if (frame) window.cancelAnimationFrame(frame);
       context.clearRect(0, 0, window.innerWidth, window.innerHeight);
     };
-  }, [enabled, pointerX, pointerY]);
+  }, [trailEnabled]);
 
   useEffect(() => {
+    if (!enabled || reduceMotion) return;
+
     const target = pressed ? 0.86 : interactive ? 1.2 : 1;
     const controls = animate(scale, target, {
       duration: 0.22,
@@ -192,30 +242,38 @@ export default function CatCursor() {
     });
 
     return () => controls.stop();
-  }, [interactive, pressed, scale]);
+  }, [interactive, pressed, scale, enabled, reduceMotion]);
 
   if (!enabled) return null;
 
   return (
     <>
-      <canvas
-        ref={canvasRef}
-        aria-hidden
-        className="pointer-events-none fixed inset-0 z-[65]"
-      />
+      {trailEnabled ? (
+        <canvas
+          ref={canvasRef}
+          aria-hidden
+          className="pointer-events-none fixed inset-0 z-[65]"
+        />
+      ) : null}
       <motion.div
         aria-hidden
-        style={{ x, y, scale }}
+        style={{
+          x: reduceMotion ? pointerX : x,
+          y: reduceMotion ? pointerY : y,
+          scale: reduceMotion ? 1 : scale,
+        }}
         animate={{ opacity: visible ? 1 : 0 }}
-        transition={{ duration: 0.16 }}
+        transition={{ duration: reduceMotion ? 0 : 0.16 }}
         className={`pointer-events-none fixed left-0 top-0 z-[70] -ml-[22px] -mt-[22px] h-11 w-11 overflow-hidden rounded-full border-2 bg-blush shadow-[0_3px_12px_rgba(179,78,115,0.35)] ${
           interactive ? "border-petal" : "border-white"
         }`}
       >
         <img
+          ref={imgRef}
           src={CAT_SRC}
           alt=""
           draggable={false}
+          onLoad={() => setImageReady(true)}
           onError={() => setFailed(true)}
           className="h-full w-full select-none object-cover"
         />
