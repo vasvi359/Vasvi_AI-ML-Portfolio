@@ -57,16 +57,18 @@ export default function CatCursor() {
   const y = useSpring(pointerY, { stiffness: 900, damping: 42, mass: 0.35 });
   const scale = useMotionValue(1);
 
-  // Hide the normal cursor only once the cat is actually on screen, so a slow
-  // or blocked image never leaves the visitor without any pointer at all.
+  // Hide the normal cursor only once the cat is actually drawn and following the
+  // pointer. Hiding it earlier (image loaded, but no pointer event yet) has left
+  // some visitors with no visible pointer at all, so the native arrow stays until
+  // the cat is genuinely on screen; a slow or blocked image never removes it.
   useEffect(() => {
-    if (!enabled || failed || !imageReady) return;
+    if (!enabled || failed || !imageReady || !visible) return;
 
     const root = document.documentElement;
     root.classList.add("cat-cursor");
 
     return () => root.classList.remove("cat-cursor");
-  }, [enabled, failed, imageReady]);
+  }, [enabled, failed, imageReady, visible]);
 
   // Cached images may already be complete before `onLoad` can be attached.
   useEffect(() => {
