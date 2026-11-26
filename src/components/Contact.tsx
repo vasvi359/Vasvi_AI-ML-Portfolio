@@ -6,22 +6,22 @@ import { HandUnderline, WordReveal } from "./motion-kit";
 const channels = [
   {
     label: "Email",
-    value: SOCIALS.email,
-    href: `mailto:${SOCIALS.email}`,
+    value: "vasvibali@gmail.com",
+    href: "mailto:vasvibali@gmail.com",
     Icon: Mail,
     external: false,
   },
   {
     label: "LinkedIn",
     value: "linkedin.com/in/vasvi-bali-69a3b730a",
-    href: SOCIALS.linkedin,
+    href: "https://www.linkedin.com/in/vasvi-bali-69a3b730a",
     Icon: Linkedin,
     external: true,
   },
   {
     label: "GitHub",
     value: "github.com/vasvi359",
-    href: SOCIALS.github,
+    href: "https://github.com/vasvi359",
     Icon: Github,
     external: true,
   },
@@ -91,7 +91,7 @@ export default function Contact() {
 
                 <div className="mt-8 flex flex-wrap items-center gap-3">
                   <a
-                    href={`mailto:${SOCIALS.email}`}
+                    href="mailto:vasvibali@gmail.com"
                     className="group inline-flex items-center gap-2.5 rounded-full bg-surface px-6 py-3.5 text-sm font-medium text-ink transition-all duration-300 hover:-translate-y-0.5 hover:bg-blush"
                   >
                     <Mail className="h-4 w-4" strokeWidth={1.7} aria-hidden />
@@ -126,7 +126,7 @@ export default function Contact() {
                     key={label}
                     href={href}
                     target={external ? "_blank" : undefined}
-                    rel={external ? "noreferrer noopener" : undefined}
+                    rel={external ? "noopener noreferrer" : undefined}
                     className="group flex items-center gap-4 rounded-2xl border border-white/15 bg-surface/[0.07] px-4 py-3.5 backdrop-blur-sm transition-all duration-300 hover:translate-x-1 hover:border-white/35 hover:bg-surface/[0.13] sm:px-5"
                   >
                     <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-surface/10 text-white transition-colors duration-300 group-hover:bg-surface group-hover:text-accent">

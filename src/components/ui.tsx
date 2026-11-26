@@ -1,7 +1,6 @@
 import { motion, useReducedMotion } from "framer-motion";
 import type { ReactNode } from "react";
 import { Github, Linkedin, Mail } from "lucide-react";
-import { SOCIALS } from "../data";
 
 export const EASE: [number, number, number, number] = [0.22, 1, 0.36, 1];
 
@@ -113,9 +112,13 @@ export function SocialLinks({ tone = "light", className = "" }: SocialLinksProps
       : "border-blush bg-surface text-ink hover:border-rose-deep hover:bg-rose-deep hover:text-white";
 
   const links = [
-    { label: "GitHub", href: SOCIALS.github, Icon: Github },
-    { label: "LinkedIn", href: SOCIALS.linkedin, Icon: Linkedin },
-    { label: "Email Vasvi Bali", href: `mailto:${SOCIALS.email}`, Icon: Mail },
+    { label: "GitHub", href: "https://github.com/vasvi359", Icon: Github },
+    {
+      label: "LinkedIn",
+      href: "https://www.linkedin.com/in/vasvi-bali-69a3b730a",
+      Icon: Linkedin,
+    },
+    { label: "Email Vasvi Bali", href: "mailto:vasvibali@gmail.com", Icon: Mail },
   ];
 
   return (
@@ -128,7 +131,7 @@ export function SocialLinks({ tone = "light", className = "" }: SocialLinksProps
             key={label}
             href={href}
             target={external ? "_blank" : undefined}
-            rel={external ? "noreferrer noopener" : undefined}
+            rel={external ? "noopener noreferrer" : undefined}
             aria-label={label}
             className={`${base} ${styles}`}
           >
